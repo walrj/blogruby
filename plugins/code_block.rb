@@ -41,11 +41,10 @@
 # <pre><code>&lt;sarcasm> Ooooh, sarcasm... How original!&lt;/sarcasm></code></pre>
 # </figure>
 #
-require './plugins/pygments_code'
-require './plugins/raw'
+require "./plugins/pygments_code"
+require "./plugins/raw"
 
 module Jekyll
-
   class CodeBlock < Liquid::Block
     include HighlightCode
     include TemplateWrapper
@@ -58,11 +57,11 @@ module Jekyll
       @highlight = true
       if markup =~ /\s*lang:(\S+)/i
         @filetype = $1
-        markup = markup.sub(/\s*lang:(\S+)/i,'')
+        markup = markup.sub(/\s*lang:(\S+)/i, "")
       end
       if markup =~ CaptionUrlTitle
         @file = $1
-        @caption = "<figcaption><span>#{$1}</span><a href='#{$2}'>#{$3 || 'link'}</a></figcaption>"
+        @caption = "<figcaption><span>#{$1}</span><a href='#{$2}'>#{$3 || "link"}</a></figcaption>"
       elsif markup =~ Caption
         @file = $1
         @caption = "<figcaption><span>#{$1}</span></figcaption>\n"
@@ -78,17 +77,17 @@ module Jekyll
       code = super
       source = "<figure class='code'>"
       source += @caption if @caption
-      if @filetype
-        source += "#{highlight(code, @filetype)}</figure>"
-      else
-        source += "#{tableize_code(code.lstrip.rstrip.gsub(/</,'&lt;'))}</figure>"
-      end
+      source += if @filetype
+                  "#{highlight(code, @filetype)}</figure>"
+                else
+                  "#{tableize_code(code.strip.gsub(/</, "&lt;"))}</figure>"
+                end
       source = safe_wrap(source)
-      source = context['pygments_prefix'] + source if context['pygments_prefix']
-      source = source + context['pygments_suffix'] if context['pygments_suffix']
+      source = context["pygments_prefix"] + source if context["pygments_prefix"]
+      source += context["pygments_suffix"] if context["pygments_suffix"]
       source
     end
   end
 end
 
-Liquid::Template.register_tag('codeblock', Jekyll::CodeBlock)
+Liquid::Template.register_tag("codeblock", Jekyll::CodeBlock)

@@ -21,11 +21,10 @@
 #
 #
 
-require 'pathname'
-require './plugins/octopress_filters'
+require "pathname"
+require "./plugins/octopress_filters"
 
 module Jekyll
-
   class RenderPartialTag < Liquid::Tag
     include OctopressFilters
     def initialize(tag_name, markup, tokens)
@@ -33,13 +32,13 @@ module Jekyll
       @raw = false
       if markup =~ /^(\S+)\s?(\w+)?/
         @file = $1.strip
-        @raw = $2 == 'raw'
+        @raw = $2 == "raw"
       end
       super
     end
 
     def render(context)
-      file_dir = (context.registers[:site].source || 'source')
+      file_dir = (context.registers[:site].source || "source")
       file_path = Pathname.new(file_dir).expand_path
       file = file_path + @file
 
@@ -66,4 +65,4 @@ module Jekyll
   end
 end
 
-Liquid::Template.register_tag('render_partial', Jekyll::RenderPartialTag)
+Liquid::Template.register_tag("render_partial", Jekyll::RenderPartialTag)

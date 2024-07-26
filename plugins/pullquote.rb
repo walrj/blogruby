@@ -23,7 +23,6 @@
 # Note: this plugin now creates pullquotes with the class of pullquote-right by default
 
 module Jekyll
-
   class PullquoteTag < Liquid::Block
     def initialize(tag_name, markup, tokens)
       @align = (markup =~ /left/i) ? "left" : "right"
@@ -34,12 +33,12 @@ module Jekyll
       output = super
       if output =~ /\{"\s*(.+?)\s*"\}/m
         @quote = RubyPants.new($1).to_html
-        "<span class='pullquote-#{@align}' data-pullquote='#{@quote}'>#{output.gsub(/\{"\s*|\s*"\}/, '')}</span>"
+        "<span class='pullquote-#{@align}' data-pullquote='#{@quote}'>#{output.gsub(/\{"\s*|\s*"\}/, "")}</span>"
       else
-        return "Surround your pullquote like this {\" text to be quoted \"}"
+        "Surround your pullquote like this {\" text to be quoted \"}"
       end
     end
   end
 end
 
-Liquid::Template.register_tag('pullquote', Jekyll::PullquoteTag)
+Liquid::Template.register_tag("pullquote", Jekyll::PullquoteTag)

@@ -20,12 +20,11 @@
 # will output a figcaption with the title: Example 2 (test.js)
 #
 
-require './plugins/pygments_code'
-require './plugins/raw'
-require 'pathname'
+require "./plugins/pygments_code"
+require "./plugins/raw"
+require "pathname"
 
 module Jekyll
-
   class IncludeCodeTag < Liquid::Tag
     include HighlightCode
     include TemplateWrapper
@@ -34,7 +33,7 @@ module Jekyll
       @file = nil
       if markup.strip =~ /\s*lang:(\S+)/i
         @filetype = $1
-        markup = markup.strip.sub(/lang:\S+/i,'')
+        markup = markup.strip.sub(/lang:\S+/i, "")
       end
       if markup.strip =~ /(.*)?(\s+|^)(\/*\S+)/i
         @title = $1 || nil
@@ -44,7 +43,7 @@ module Jekyll
     end
 
     def render(context)
-      code_dir = (context.registers[:site].config['code_dir'].sub(/^\//,'') || 'downloads/code')
+      code_dir = (context.registers[:site].config["code_dir"].sub(/^\//, "") || "downloads/code")
       code_path = (Pathname.new(context.registers[:site].source) + code_dir).expand_path
       file = code_path + @file
 
@@ -58,7 +57,7 @@ module Jekyll
 
       Dir.chdir(code_path) do
         code = file.read
-        @filetype = file.extname.sub('.','') if @filetype.nil?
+        @filetype = file.extname.sub(".", "") if @filetype.nil?
         title = @title ? "#{@title} (#{file.basename})" : file.basename
         url = "/#{code_dir}/#{@file}"
         source = "<figure class='code'><figcaption><span>#{title}</span> <a href='#{url}'>download</a></figcaption>\n"
@@ -67,7 +66,6 @@ module Jekyll
       end
     end
   end
-
 end
 
-Liquid::Template.register_tag('include_code', Jekyll::IncludeCodeTag)
+Liquid::Template.register_tag("include_code", Jekyll::IncludeCodeTag)

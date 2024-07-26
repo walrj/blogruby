@@ -28,9 +28,7 @@
 # PLugin License: MIT
 
 module Jekyll
-
   class AliasGenerator < Generator
-
     def generate(site)
       @site = site
 
@@ -40,38 +38,37 @@ module Jekyll
 
     def process_posts
       @site.posts.each do |post|
-        generate_aliases(post.url, post.data['alias'])
+        generate_aliases(post.url, post.data["alias"])
       end
     end
 
     def process_pages
       @site.pages.each do |page|
-        generate_aliases(page.destination('').gsub(/index\.(html|htm)$/, ''), page.data['alias'])
+        generate_aliases(page.destination("").gsub(/index\.(html|htm)$/, ""), page.data["alias"])
       end
     end
 
     def generate_aliases(destination_path, aliases)
-      alias_paths ||= Array.new
+      alias_paths ||= []
       alias_paths << aliases
       alias_paths.compact!
 
       alias_paths.flatten.each do |alias_path|
         alias_path = alias_path.to_s
 
-        alias_dir  = File.extname(alias_path).empty? ? alias_path : File.dirname(alias_path)
+        alias_dir = File.extname(alias_path).empty? ? alias_path : File.dirname(alias_path)
         alias_file = File.extname(alias_path).empty? ? "index.html" : File.basename(alias_path)
 
-        fs_path_to_dir   = File.join(@site.dest, alias_dir)
+        fs_path_to_dir = File.join(@site.dest, alias_dir)
         alias_index_path = File.join(alias_dir, alias_file)
 
         FileUtils.mkdir_p(fs_path_to_dir)
 
-        File.open(File.join(fs_path_to_dir, alias_file), 'w') do |file|
-          file.write(alias_template(destination_path))
-        end
+        File.write(File.join(fs_path_to_dir, alias_file), alias_template(destination_path))
 
-        (alias_index_path.split('/').size + 1).times do |sections|
-          @site.static_files << Jekyll::AliasFile.new(@site, @site.dest, alias_index_path.split('/')[0, sections].join('/'), '')
+        (alias_index_path.split("/").size + 1).times do |sections|
+          @site.static_files << Jekyll::AliasFile.new(@site, @site.dest,
+                                                      alias_index_path.split("/")[0, sections].join("/"), "")
         end
       end
     end
@@ -91,18 +88,18 @@ module Jekyll
   end
 
   class AliasFile < StaticFile
-    require 'set'
+    require "set"
 
     def destination(dest)
       File.join(dest, @dir)
     end
 
     def modified?
-      return false
+      false
     end
 
     def write(dest)
-      return true
+      true
     end
   end
 end
