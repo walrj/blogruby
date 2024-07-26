@@ -292,14 +292,14 @@ class RubyPants < String
           if do_quotes
             if t == "'"
               # Special case: single-character ' token
-              if prev_token_last_char =~ /\S/
+              if /\S/.match?(prev_token_last_char)
                 t = "&#8217;"
               else
                 t = "&#8216;"
               end
             elsif t == '"'
               # Special case: single-character " token
-              if prev_token_last_char =~ /\S/
+              if /\S/.match?(prev_token_last_char)
                 t = "&#8221;"
               else
                 t = "&#8220;"

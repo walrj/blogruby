@@ -24,12 +24,12 @@ module Jekyll
   class ContentFilters < PostFilter
     include OctopressFilters
     def pre_render(post)
-      if post.ext.match('html|textile|markdown|md|haml|slim|xml')
+      if post.ext.match?('html|textile|markdown|md|haml|slim|xml')
         post.content = pre_filter(post.content)
       end
     end
     def post_render(post)
-      if post.ext.match('html|textile|markdown|md|haml|slim|xml')
+      if post.ext.match?('html|textile|markdown|md|haml|slim|xml')
         post.content = post_filter(post.content)
       end
     end
@@ -51,7 +51,7 @@ module OctopressLiquidFilters
 
   # Checks for excerpts (helpful for template conditionals)
   def has_excerpt(input)
-    input =~ /<!--\s*more\s*-->/i ? true : false
+    /<!--\s*more\s*-->/i.match?(input) ? true : false
   end
 
   # Summary is used on the Archive pages to return the first block of content from a post.
