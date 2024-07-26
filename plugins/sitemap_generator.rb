@@ -36,11 +36,10 @@
 #
 # Modified for Octopress by John W. Long
 #
-require 'rexml/document'
-require 'fileutils'
+require "rexml/document"
+require "fileutils"
 
 module Jekyll
-
   # Change SITEMAP_FILE_NAME if you would like your sitemap file
   # to be called something else
   SITEMAP_FILE_NAME = "sitemap.xml"
@@ -66,7 +65,7 @@ module Jekyll
     end
 
     def location_on_server
-      "#{site.config['url']}#{url}"
+      "#{site.config["url"]}#{url}"
     end
   end
 
@@ -78,7 +77,7 @@ module Jekyll
     end
 
     def location_on_server
-      location = "#{site.config['url']}#{@dir}#{url}"
+      location = "#{site.config["url"]}#{@dir}#{url}"
       location.gsub(/index.html$/, "")
     end
   end
@@ -102,10 +101,9 @@ module Jekyll
   end
 
   class SitemapGenerator < Generator
-
     # Valid values allowed by sitemap.xml spec for change frequencies
     VALID_CHANGE_FREQUENCY_VALUES = ["always", "hourly", "daily", "weekly",
-      "monthly", "yearly", "never"]
+                                     "monthly", "yearly", "never"]
 
     # Goes through pages and posts and generates sitemap.xml file
     #
@@ -115,7 +113,7 @@ module Jekyll
 
       urlset = REXML::Element.new "urlset"
       urlset.add_attribute("xmlns",
-        "http://www.sitemaps.org/schemas/sitemap/0.9")
+                           "http://www.sitemaps.org/schemas/sitemap/0.9")
 
       @last_modified_post_date = fill_posts(site, urlset)
       fill_pages(site, urlset)
@@ -123,7 +121,7 @@ module Jekyll
       sitemap.add_element(urlset)
 
       # File I/O: create sitemap.xml file and write out pretty-printed XML
-      unless File.exists?(site.dest)
+      unless File.exist?(site.dest)
         FileUtils.mkdir_p(site.dest)
       end
       file = File.new(File.join(site.dest, SITEMAP_FILE_NAME), "w")
@@ -149,7 +147,7 @@ module Jekyll
 
         path = post.full_path_to_source
         date = File.mtime(path)
-        last_modified_date = date if last_modified_date == nil or date > last_modified_date
+        last_modified_date = date if last_modified_date.nil? or date > last_modified_date
       end
 
       last_modified_date
@@ -163,7 +161,7 @@ module Jekyll
       site.pages.each do |page|
         if !excluded?(page.name)
           path = page.full_path_to_source
-          if File.exists?(path)
+          if File.exist?(path)
             url = fill_url(site, page)
             urlset.add_element(url)
           end
@@ -184,11 +182,11 @@ module Jekyll
       lastmod = fill_last_modified(site, page_or_post)
       url.add_element(lastmod) if lastmod
 
-      if (page_or_post.data[CHANGE_FREQUENCY_CUSTOM_VARIABLE_NAME])
+      if page_or_post.data[CHANGE_FREQUENCY_CUSTOM_VARIABLE_NAME]
         change_frequency =
           page_or_post.data[CHANGE_FREQUENCY_CUSTOM_VARIABLE_NAME].downcase
 
-        if (valid_change_frequency?(change_frequency))
+        if valid_change_frequency?(change_frequency)
           changefreq = REXML::Element.new "changefreq"
           changefreq.text = change_frequency
           url.add_element(changefreq)
@@ -197,7 +195,7 @@ module Jekyll
         end
       end
 
-      if (page_or_post.data[PRIORITY_CUSTOM_VARIABLE_NAME])
+      if page_or_post.data[PRIORITY_CUSTOM_VARIABLE_NAME]
         priority_value = page_or_post.data[PRIORITY_CUSTOM_VARIABLE_NAME]
         if valid_priority?(priority_value)
           priority = REXML::Element.new "priority"
@@ -231,18 +229,16 @@ module Jekyll
       date = File.mtime(path)
       latest_date = find_latest_date(date, site, page_or_post)
 
-      if @last_modified_post_date == nil
+      if @last_modified_post_date.nil?
         # This is a post
         lastmod.text = latest_date.iso8601
-      else
+      elsif posts_included?(page_or_post.name)
         # This is a page
-        if posts_included?(page_or_post.name)
-          # We want to take into account the last post date
-          final_date = greater_date(latest_date, @last_modified_post_date)
-          lastmod.text = final_date.iso8601
-        else
-          lastmod.text = latest_date.iso8601
-        end
+        final_date = greater_date(latest_date, @last_modified_post_date)
+        lastmod.text = final_date.iso8601
+      # We want to take into account the last post date
+      else
+        lastmod.text = latest_date.iso8601
       end
       lastmod
     end
@@ -258,7 +254,7 @@ module Jekyll
         path = layout.full_path_to_source
         date = File.mtime(path)
 
-        latest_date = date if (date > latest_date)
+        latest_date = date if date > latest_date
 
         layout = layouts[layout.data["layout"]]
       end
@@ -270,7 +266,7 @@ module Jekyll
     #
     # Returns latest of two dates
     def greater_date(date1, date2)
-      if (date1 >= date2)
+      if date1 >= date2
         date1
       else
         date2
@@ -309,4 +305,3 @@ module Jekyll
     end
   end
 end
-

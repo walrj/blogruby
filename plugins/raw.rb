@@ -6,9 +6,10 @@ module TemplateWrapper
   def safe_wrap(input)
     "<div class='bogus-wrapper'><notextile>#{input}</notextile></div>"
   end
+
   # This must be applied after the
   def unwrap(input)
-    input.gsub /<div class='bogus-wrapper'><notextile>(.+?)<\/notextile><\/div>/m do
+    input.gsub(/<div class='bogus-wrapper'><notextile>(.+?)<\/notextile><\/div>/m) do
       $1
     end
   end
@@ -31,10 +32,10 @@ module Jekyll
             return
           end
         end
-        @nodelist << token if not token.empty?
+        @nodelist << token if !token.empty?
       end
     end
   end
 end
 
-Liquid::Template.register_tag('raw', Jekyll::RawTag)
+Liquid::Template.register_tag("raw", Jekyll::RawTag)

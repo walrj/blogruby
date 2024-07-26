@@ -19,11 +19,11 @@ module Jekyll
   class JsFiddle < Liquid::Tag
     def initialize(tag_name, markup, tokens)
       if /(?<fiddle>\w+\/?\d?)(?:\s+(?<sequence>[\w,]+))?(?:\s+(?<skin>\w+))?(?:\s+(?<height>\w+))?(?:\s+(?<width>\w+))?/ =~ markup
-        @fiddle   = fiddle
-        @sequence = (sequence unless sequence == 'default') || 'js,resources,html,css,result'
-        @skin     = (skin unless skin == 'default') || 'light'
-        @width    = width || '100%'
-        @height   = height || '300px'
+        @fiddle = fiddle
+        @sequence = (sequence unless sequence == "default") || "js,resources,html,css,result"
+        @skin = (skin unless skin == "default") || "light"
+        @width = width || "100%"
+        @height = height || "300px"
       end
     end
 
@@ -37,4 +37,4 @@ module Jekyll
   end
 end
 
-Liquid::Template.register_tag('jsfiddle', Jekyll::JsFiddle)
+Liquid::Template.register_tag("jsfiddle", Jekyll::JsFiddle)

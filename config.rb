@@ -1,4 +1,4 @@
-require 'sass-globbing'
+require "sass-globbing"
 
 # Require any additional compass plugins here.
 project_type = :stand_alone

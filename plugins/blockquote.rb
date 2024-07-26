@@ -14,15 +14,14 @@
 #     <strong>Bobby Willis</strong><cite><a href="http://google.com/search?q=pants">The Search For Bobby's Pants</a>
 #   </blockquote>
 #
-require './plugins/titlecase.rb'
+require "./plugins/titlecase"
 
 module Jekyll
-
   class Blockquote < Liquid::Block
     FullCiteWithTitle = /(\S.*)\s+(https?:\/\/)(\S+)\s+(.+)/i
     FullCite = /(\S.*)\s+(https?:\/\/)(\S+)/i
     AuthorTitle = /([^,]+),([^,]+)/
-    Author =  /(.+)/
+    Author = /(.+)/
 
     def initialize(tag_name, markup, tokens)
       @by = nil
@@ -48,35 +47,35 @@ module Jekyll
       quote = paragraphize(super)
       author = "<strong>#{@by.strip}</strong>" if @by
       if @source
-        url = @source.match(/https?:\/\/(.+)/)[1].split('/')
+        url = @source.match(/https?:\/\/(.+)/)[1].split("/")
         parts = []
         url.each do |part|
-          if (parts + [part]).join('/').length < 32
+          if (parts + [part]).join("/").length < 32
             parts << part
           end
         end
-        source = parts.join('/')
-        source << '/&hellip;' unless source == @source
+        source = parts.join("/")
+        source << "/&hellip;" unless source == @source
       end
       if !@source.nil?
-        cite = " <cite><a href='#{@source}'>#{(@title || source)}</a></cite>"
+        cite = " <cite><a href='#{@source}'>#{@title || source}</a></cite>"
       elsif !@title.nil?
         cite = " <cite>#{@title}</cite>"
       end
       blockquote = if @by.nil?
-        quote
-      elsif cite
-        "#{quote}<footer>#{author + cite}</footer>"
-      else
-        "#{quote}<footer>#{author}</footer>"
-      end
+                     quote
+                   elsif cite
+                     "#{quote}<footer>#{author + cite}</footer>"
+                   else
+                     "#{quote}<footer>#{author}</footer>"
+                   end
       "<blockquote>#{blockquote}</blockquote>"
     end
 
     def paragraphize(input)
-      "<p>#{input.lstrip.rstrip.gsub(/\n\n/, '</p><p>').gsub(/\n/, '<br/>')}</p>"
+      "<p>#{input.strip.gsub(/\n\n/, "</p><p>").gsub(/\n/, "<br/>")}</p>"
     end
   end
 end
 
-Liquid::Template.register_tag('blockquote', Jekyll::Blockquote)
+Liquid::Template.register_tag("blockquote", Jekyll::Blockquote)
