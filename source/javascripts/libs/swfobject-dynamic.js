@@ -2,7 +2,7 @@
 	is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 */
 
-var swfobject = function() {
+var swfobject = (function() {
 
 	var UNDEF = "undefined",
 		OBJECT = "object",
@@ -28,7 +28,7 @@ var swfobject = function() {
 		- User agent string detection is only used when no good alternative is possible
 		- Is executed directly for optimal performance
 	*/
-	ua = function() {
+	ua = (function() {
 		var w3cdom = typeof doc.getElementById != UNDEF && typeof doc.getElementsByTagName != UNDEF && typeof doc.createElement != UNDEF,
 			u = nav.userAgent.toLowerCase(),
 			p = nav.platform.toLowerCase(),
@@ -64,7 +64,7 @@ var swfobject = function() {
 			catch(e) {}
 		}
 		return { w3:w3cdom, pv:playerVersion, wk:webkit, ie:ie, win:windows, mac:mac };
-	}()
+	}())
 
 
 	/* Main function
@@ -295,4 +295,4 @@ var swfobject = function() {
 			return "";
 		}
 	};
-}();
+}());
