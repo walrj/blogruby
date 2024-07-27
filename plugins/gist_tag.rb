@@ -96,7 +96,7 @@ module Jekyll
 
     def get_web_content(url)
       raw_uri           = URI.parse url
-      proxy             = ENV['http_proxy']
+      proxy             = ENV.fetch('http_proxy', nil)
       if proxy
         proxy_uri       = URI.parse(proxy)
         https           = Net::HTTP::Proxy(proxy_uri.host, proxy_uri.port).new raw_uri.host, raw_uri.port
