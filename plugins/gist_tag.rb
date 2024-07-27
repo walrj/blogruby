@@ -5,18 +5,18 @@
 #
 # Example usage: {% gist 1027674 gist_tag.rb %} //embeds a gist for this plugin
 
-require 'cgi'
-require 'digest/md5'
-require 'net/https'
-require 'uri'
+require "cgi"
+require "digest/md5"
+require "net/https"
+require "uri"
 
 module Jekyll
   class GistTag < Liquid::Tag
     def initialize(tag_name, text, token)
       super
-      @text           = text
+      @text = text
       @cache_disabled = false
-      @cache_folder   = File.expand_path "../.gist-cache", File.dirname(__FILE__)
+      @cache_folder = File.expand_path "../.gist-cache", File.dirname(__FILE__)
       FileUtils.mkdir_p @cache_folder
     end
 
@@ -24,7 +24,7 @@ module Jekyll
       if parts = @text.match(/([a-zA-Z\d]*) (.*)/)
         gist, file = parts[1].strip, parts[2].strip
         script_url = script_url_for gist, file
-        code       = get_cached_gist(gist, file) || get_gist_from_web(gist, file)
+        code = get_cached_gist(gist, file) || get_gist_from_web(gist, file)
         html_output_for script_url, code
       else
         ""
@@ -33,9 +33,9 @@ module Jekyll
 
     def html_output_for(script_url, code)
       code = CGI.escapeHTML code
-      <<-HTML
-<div><script src='#{script_url}'></script>
-<noscript><pre><code>#{code}</code></pre></noscript></div>
+      <<~HTML
+        <div><script src='#{script_url}'></script>
+        <noscript><pre><code>#{code}</code></pre></noscript></div>
       HTML
     end
 
@@ -51,35 +51,34 @@ module Jekyll
 
     def cache(gist, file, data)
       cache_file = get_cache_file_for gist, file
-      File.open(cache_file, "w") do |io|
-        io.write data
-      end
+      File.write(cache_file, data)
     end
 
     def get_cached_gist(gist, file)
       return nil if @cache_disabled
+
       cache_file = get_cache_file_for gist, file
       File.read cache_file if File.exist? cache_file
     end
 
     def get_cache_file_for(gist, file)
       bad_chars = /[^a-zA-Z0-9\-_.]/
-      gist      = gist.gsub bad_chars, ''
-      file      = file.gsub bad_chars, ''
-      md5       = Digest::MD5.hexdigest "#{gist}-#{file}"
+      gist = gist.gsub bad_chars, ""
+      file = file.gsub bad_chars, ""
+      md5 = Digest::MD5.hexdigest "#{gist}-#{file}"
       File.join @cache_folder, "#{gist}-#{file}-#{md5}.cache"
     end
 
     def get_gist_from_web(gist, file)
       gist_url = get_gist_url_for(gist, file)
-      data     = get_web_content(gist_url)
+      data = get_web_content(gist_url)
 
       if data.code.to_i == 302
         data = handle_gist_redirecting(data)
       end
 
       if data.code.to_i != 200
-        raise RuntimeError, "Gist replied with #{data.code} for #{gist_url}"
+        raise "Gist replied with #{data.code} for #{gist_url}"
       end
 
       cache(gist, file, data.body) unless @cache_disabled
@@ -87,26 +86,27 @@ module Jekyll
     end
 
     def handle_gist_redirecting(data)
-      redirected_url = data.header['Location']
+      redirected_url = data.header["Location"]
       if redirected_url.nil? || redirected_url.empty?
         raise ArgumentError, "GitHub replied with a 302 but didn't provide a location in the response headers."
       end
+
       get_web_content(redirected_url)
     end
 
     def get_web_content(url)
-      raw_uri           = URI.parse url
-      proxy             = ENV.fetch('http_proxy', nil)
+      raw_uri = URI.parse url
+      proxy = ENV.fetch("http_proxy", nil)
       if proxy
-        proxy_uri       = URI.parse(proxy)
-        https           = Net::HTTP::Proxy(proxy_uri.host, proxy_uri.port).new raw_uri.host, raw_uri.port
+        proxy_uri = URI.parse(proxy)
+        https = Net::HTTP::Proxy(proxy_uri.host, proxy_uri.port).new raw_uri.host, raw_uri.port
       else
-        https           = Net::HTTP.new raw_uri.host, raw_uri.port
+        https = Net::HTTP.new raw_uri.host, raw_uri.port
       end
-      https.use_ssl     = true
+      https.use_ssl = true
       https.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      request           = Net::HTTP::Get.new raw_uri.request_uri
-      data              = https.request request
+      request = Net::HTTP::Get.new raw_uri.request_uri
+      data = https.request request
     end
   end
 
@@ -118,5 +118,5 @@ module Jekyll
   end
 end
 
-Liquid::Template.register_tag('gist', Jekyll::GistTag)
-Liquid::Template.register_tag('gistnocache', Jekyll::GistTagNoCache)
+Liquid::Template.register_tag("gist", Jekyll::GistTag)
+Liquid::Template.register_tag("gistnocache", Jekyll::GistTagNoCache)
